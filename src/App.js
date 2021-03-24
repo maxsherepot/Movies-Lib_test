@@ -1,25 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import HeaderPanel from "./components/header/HeaderPanel";
+import AddMovieModal from './components/modal/AddMovieModal';
+import MoviesList from './components/movies/MoviesList';
+import "./assets/styles/style.scss";
+import basicMovies from "./assets/basicMovies/basicMovies";
 
-function App() {
+
+
+const App = () => {
+  const localMovies = JSON.parse(localStorage.getItem("movies")) || null;
+
+  const [movies, setMovies] = useState(localMovies || basicMovies);
+  const [openModal, setOpenModal] = useState(false);
+
+
+  useEffect(() => {
+    localStorage.setItem("movies", JSON.stringify(movies));
+  }, [movies]);
+
+
+  const onAddMovie = movie => {
+    setMovies([movie, ...movies]);
+  };
+
+
+  const onCloseDeleteModal = () => {
+    setOpenModal(false);
+  };
+
+
+  const onOpenDeleteModal = () => {
+    setOpenModal(true);
+  };
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+
+      {openModal &&
+        <AddMovieModal
+          onCloseDeleteModal={onCloseDeleteModal}
+          onAddMovie={onAddMovie}
+          setOpenModal={setOpenModal}
+        />
+      }
+
+      <HeaderPanel
+        onOpenDeleteModal={onOpenDeleteModal}
+      />
+
+      <MoviesList
+        movies={movies}
+      />
+
     </div>
   );
-}
+};
+
 
 export default App;
